@@ -1,8 +1,11 @@
 from tkinter import *
+from tkinter import messagebox
+from tkinter import ttk
+import mysql.connector
 
 window = Tk()
 window.geometry("400x400")
-window.title('Logout Page')
+window.title('Admin Menu')
 window.resizable("False", "False")
 window["bg"] = "white"
 
@@ -18,18 +21,17 @@ class Info:
         self.home_label = Label(self.top_frame, text="LC", font=("Arial", 15, "bold"), bg="lime", height=2,
                                 padx=20)
         self.home_label.pack(side="right")
-        self.label = Label(window, text="Logout", bg="white", font=("Arial", 15, "bold"))
-        self.label.place(x=170, y=60)
-        self.verify = Button(window, text="Logout", bg="blue", fg="white", borderwidth=5,
-                             font=("Arial", 12, "bold"))
-        self.verify.place(x=160, y=280)
-        self.back = Button(window, text="Admin", command=self.admin, bg="lime", borderwidth=5,
-                           font=("Arial", 12, "bold"))
-        self.back.place(x=163, y=330)
 
-    def admin(self):
-        window.destroy()
-        import admin
+        self.exit = Button(window, text="Exit", command=self.exit, bg="lime", borderwidth=5,
+                           font=("Arial", 12, "bold"))
+        self.exit.place(x=310, y=330)
+
+
+    def exit(self):
+        msg_box = messagebox.askquestion("Exit Application", "Are you sure you want to exit the application",
+                                         icon='warning')
+        if msg_box == "yes":
+            window.destroy()
 
 
 obj = Info(window)
