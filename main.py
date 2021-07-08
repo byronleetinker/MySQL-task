@@ -1,6 +1,9 @@
 from tkinter import *
 from tkinter import messagebox
 import mysql.connector
+from datetime import date
+from datetime import timedelta
+
 
 window = Tk()
 window.geometry("400x400")
@@ -43,10 +46,24 @@ class Info:
         self.exit.place(x=310, y=330)
 
     def login(self):
-        mydb = mysql.connector.connect(user='lifechoices', password='@Lifechoices1234', host='127.0.0.1',
-                                       database='LifechoicesOnline')
+        mydb = mysql.connector.connect(user="lifechoices", password="@Lifechoices1234",
+                                       host="127.0.0.1", database="LifechoicesOnline")
         mycursor = mydb.cursor()
-        mycursor.execute('Select * from Registration')
+        select = "SELECT user_id FROM Login"
+        self.userid = mycursor.execute(select)
+        self.userid = mycursor.fetchone()
+        self.sign_in_date = date.today()
+        self.sign_in_time = timedelta()
+
+        sql = "INSERT INTO Users (userid, username, sign_in_date, sign_in_time) VALUES(%s, %s, %s, %s) "
+        values = (self.userid[0], self.username_entry.get(), self.sign_in_date, self.sign_in_time)
+        mycursor.execute(sql, values)
+        mydb.commit()
+
+        mycursor.execute("Select * from Registration")
+        messagebox.showinfo("Success", "Your registration was successful.")
+        window.destroy()
+        import menu
 
         if self.username_entry.get() == "" or self.password_entry.get() == "":
             messagebox.showerror("Error", "Please enter valid details")

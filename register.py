@@ -73,23 +73,7 @@ class Info:
         self.exit.place(x=310, y=480)
 
     def register(self):
-        mydb = mysql.connector.connect(user="lifechoices", password="@Lifechoices1234",
-                                       host="127.0.0.1", database="LifechoicesOnline")
-        mycursor = mydb.cursor()
-        select = "SELECT user_id FROM Login"
-        self.user_id = mycursor.execute(select)
-        self.user_id = mycursor.fetchone()
 
-        sql = "INSERT INTO Registration (name, surname, username, password, email, IDNumber, phoneNumber, NextOfKinName, " \
-              "NextOfKinNumber, user_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) "
-        values = (self.username_entry.get(), self.password_entry.get(), self.email_entry.get(), self.name_entry.get(),
-                  self.surname_entry.get(),
-                  self.ID_entry.get(), self.number_entry.get(), self.kiname_entry.get(), self.kinumber_entry.get(),
-                  self.user_id[0])
-        mycursor.execute(sql, values)
-        mydb.commit()
-
-        mycursor.execute("Select * from Registration")
 
         try:
             if self.name_entry.get() == "" or self.surname_entry.get() == "" or self.username_entry.get() == "" or self.password_entry.get() == "" or self.kiname_entry.get() == "" or self.kinumber_entry.get() == "":
@@ -107,9 +91,26 @@ class Info:
                 messagebox.showerror("Error", "Please enter correct phone number")
 
         except:
-            messagebox.showinfo("Success", "Your registration was successful.")
-            window.destroy()
-            import menu
+            mydb = mysql.connector.connect(user="lifechoices", password="@Lifechoices1234",
+                                       host="127.0.0.1", database="LifechoicesOnline")
+        mycursor = mydb.cursor()
+        select = "SELECT user_id FROM Login"
+        self.user_id = mycursor.execute(select)
+        self.user_id = mycursor.fetchone()
+
+        sql = "INSERT INTO Registration (name, surname, username, password, email, IDNumber, phoneNumber, NextOfKinName, " \
+              "NextOfKinNumber, user_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) "
+        values = (self.username_entry.get(), self.password_entry.get(), self.email_entry.get(), self.name_entry.get(),
+                  self.surname_entry.get(),
+                  self.ID_entry.get(), self.number_entry.get(), self.kiname_entry.get(), self.kinumber_entry.get(),
+                  self.user_id[0])
+        mycursor.execute(sql, values)
+        mydb.commit()
+
+        mycursor.execute("Select * from Registration")
+        messagebox.showinfo("Success", "Your registration was successful.")
+        window.destroy()
+        import menu
 
     def back(self):
         window.destroy()
