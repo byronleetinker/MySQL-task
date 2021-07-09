@@ -71,46 +71,64 @@ class Info:
         self.exit = Button(window, text="Exit", command=self.exit, bg="blue", fg="white", borderwidth=5,
                            font=("Arial", 12, "bold"))
         self.exit.place(x=310, y=480)
+        window.bind('<Control-Alt-a>', self.admin)
+
+    def admin(self, event=None):
+            window.destroy()
+            import admin
 
     def register(self):
+            name = self.name_entry.get()
+            surname = self.surname_entry.get()
+            number = self.number_entry.get()
+            email = self.email_entry.get()
+            id = self.ID_entry.get()
+            user = self.username_entry.get()
+            password = self.password_entry.get()
+            kinname = self.kiname_entry.get()
+            kinumber = self.kinumber_entry.get()
 
+            if name == "" or surname == "" or user == "" or password == "" or kinname == "" or kinumber == "":
+                messagebox.showerror("Error", "Please enter valid details")
 
-        try:
-            if self.name_entry.get() == "" or self.surname_entry.get() == "" or self.username_entry.get() == "" or self.password_entry.get() == "" or self.kiname_entry.get() == "" or self.kinumber_entry.get() == "":
-                messagebox.showerror("Error", "Please ensure that all fields are filled in.")
-
-            if 13 != len(self.ID_entry):
-                ID = rsaidnumber.parse(self.ID_entry)
-                ID.valid
-                messagebox.showerror("Error", "Please enter correct ID number")
-
-            elif validate_email(self.email_entry.get()):
-                messagebox.showerror("Error", "Please enter the correct email address")
-
-            elif len(self.number_entry) != 10:
+            elif len(number) != 10:
                 messagebox.showerror("Error", "Please enter correct phone number")
 
-        except:
-            mydb = mysql.connector.connect(user="lifechoices", password="@Lifechoices1234",
-                                       host="127.0.0.1", database="LifechoicesOnline")
-        mycursor = mydb.cursor()
-        select = "SELECT user_id FROM Login"
-        self.user_id = mycursor.execute(select)
-        self.user_id = mycursor.fetchone()
+            elif email == " ":
+             messagebox.showerror("Error", "Enter valid details")
+            else:
+               if not validate_email(email):
+                       messagebox.showerror("Error", "Enter correct Email")
+               else:
+                       if len(id) != 13:  # if the id is not 13 digits show an error
+                           messagebox.showerror("Error", "Please enter correct ID number")
 
-        sql = "INSERT INTO Registration (name, surname, username, password, email, IDNumber, phoneNumber, NextOfKinName, " \
-              "NextOfKinNumber, user_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) "
-        values = (self.username_entry.get(), self.password_entry.get(), self.email_entry.get(), self.name_entry.get(),
-                  self.surname_entry.get(),
-                  self.ID_entry.get(), self.number_entry.get(), self.kiname_entry.get(), self.kinumber_entry.get(),
-                  self.user_id[0])
-        mycursor.execute(sql, values)
-        mydb.commit()
+                       elif len(id) == 13:  # if ID is 13 digits accept
+                           id = rsaidnumber.parse(id)
+                           id.valid
+                       else:
+                            mydb = mysql.connector.connect(user="lifechoices", password="@Lifechoices1234",
+                                           host="127.0.0.1", database="LifechoicesOnline")
+                            mycursor = mydb.cursor()
+                            select = "SELECT user_id FROM Login"
+                            self.user_id = mycursor.execute(select)
+                            self.user_id = mycursor.fetchone()
 
-        mycursor.execute("Select * from Registration")
-        messagebox.showinfo("Success", "Your registration was successful.")
-        window.destroy()
-        import menu
+                            sql = "INSERT INTO Registration (name, surname, username, password, email, IDNumber, phoneNumber, NextOfKinName, " \
+                                  "NextOfKinNumber, user_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) "
+                            values = (
+                                self.username_entry.get(), self.password_entry.get(), self.email_entry.get(), self.name_entry.get(),
+                                self.surname_entry.get(),
+                                self.ID_entry.get(), self.number_entry.get(), self.kiname_entry.get(), self.kinumber_entry.get(),
+                                self.user_id[0])
+                            mycursor.execute(sql, values)
+                            mydb.commit()
+
+                            mycursor.execute("Select * from Registration")
+
+                            messagebox.showinfo("Success", "Your registration was successful.")
+                            window.destroy()
+                            import main
 
     def back(self):
         window.destroy()

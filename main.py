@@ -1,9 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 import mysql.connector
-from datetime import date
-from datetime import timedelta
-
+from datetime import datetime
 
 window = Tk()
 window.geometry("400x400")
@@ -13,6 +11,7 @@ window["bg"] = "white"
 
 
 class Info:
+
     def __init__(self, window):
         self.top_frame = Frame(window, bg='blue')
         self.top_frame.pack(side="top", fill=X)
@@ -20,7 +19,6 @@ class Info:
                                  fg="white", height=2,
                                  padx=20)
         self.home2_label.pack(side="left")
-
         self.home_label = Label(self.top_frame, text="LC", font=("Arial", 15, "bold"), bg="lime", height=2,
                                 padx=20)
         self.home_label.pack(side="right")
@@ -44,34 +42,38 @@ class Info:
         self.exit = Button(window, text="Exit", command=self.exit, bg="lime", borderwidth=5,
                            font=("Arial", 12, "bold"))
         self.exit.place(x=310, y=330)
+        window.bind('<Control-Alt-a>', self.admin)
+
+    def admin(self, event=None):
+        window.destroy()
+        import admin
 
     def login(self):
-        mydb = mysql.connector.connect(user="lifechoices", password="@Lifechoices1234",
-                                       host="127.0.0.1", database="LifechoicesOnline")
-        mycursor = mydb.cursor()
-        select = "SELECT user_id FROM Login"
-        self.userid = mycursor.execute(select)
-        self.userid = mycursor.fetchone()
-        self.sign_in_date = date.today()
-        self.sign_in_time = timedelta()
+        user = self.username_entry.get()
+        password = self.password_entry.get()
 
-        sql = "INSERT INTO Users (userid, username, sign_in_date, sign_in_time) VALUES(%s, %s, %s, %s) "
-        values = (self.userid[0], self.username_entry.get(), self.sign_in_date, self.sign_in_time)
-        mycursor.execute(sql, values)
-        mydb.commit()
-
-        mycursor.execute("Select * from Registration")
-        messagebox.showinfo("Success", "Your registration was successful.")
-        window.destroy()
-        import menu
-
-        if self.username_entry.get() == "" or self.password_entry.get() == "":
+        if user == "" or password == "":
             messagebox.showerror("Error", "Please enter valid details")
 
         else:
-            messagebox.showinfo("Successful login", "Welcome to the Menu page")
-            window.destroy()
-            import menu
+            mydb = mysql.connector.connect(user="lifechoices", password="@Lifechoices1234",
+                                           host="127.0.0.1", database="LifechoicesOnline")
+            sql = "INSERT INTO Attendance (username, sign_in_date, sign_in_time, sign_out_time) VALUES(%s, %s, %s, %s) "
+            values = (self.username_entry.get(), self.sign_in_date, self.sign_in_time)
+            mydb.commit()
+
+            cursor = mydb.cursor()
+            cursor.execute("SELECT name, IDnumber FROM Registration")
+            sign_in_date = datetime.today()
+            sign_in_time = datetime.now()
+            for i in cursor:
+                print(i)
+                if self.username == i[0] and self.password == i[1]:
+                    messagebox.showinfo("Successful login", "Welcome to the Menu page")
+                    window.destroy()
+                    import menu
+
+
 
     def create(self):
         window.destroy()
